@@ -16,7 +16,7 @@ public class Enemy {
 
 		switch (type) {
 
-		case "Stone golem":
+		case "Shroombear":
 			this.maxHealth = level * 15;
 			this.health = maxHealth;
 			this.attack = level * 6;
@@ -24,7 +24,7 @@ public class Enemy {
 			this.expReward = (int) (level * 2.5);
 			break;
 
-		case "Goblin":
+		case "Hammerbeak":
 			this.maxHealth = level * 6;
 			this.health = maxHealth;
 			this.attack = level * 3;
@@ -32,16 +32,21 @@ public class Enemy {
 			this.expReward = (int) (level * 2.5);
 		}
 	}
-	
-	public boolean isAlive() {
-		return health >= 0;
-	}
-	
-	public void takeDamage(int damage) {
-		int health = Math.min(health - damage, 0);
-		
-	}
-	
-	
 
+	public boolean isDefeated() {
+		return health <= 0;
+	}
+
+	public void takeDamage(int damage) {
+		health = Math.max(health - damage, 0);
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
 }
