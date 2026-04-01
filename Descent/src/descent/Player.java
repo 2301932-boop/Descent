@@ -1,5 +1,8 @@
 package descent;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class Player {
     private String name;
     private int level;
@@ -12,8 +15,11 @@ public class Player {
     private int strength;
     private int agility;
     private int vitality;
+    private int energy;
+    private int maxEnergy;
     private int intelligence;
     private Inventory inventory;
+    private List<Move> moves;
 
     private static final int START_LEVEL = 1;
     private static final int START_EXP_TO_NEXT_LEVEL = 30;
@@ -33,7 +39,14 @@ public class Player {
         this.agility = agility;
         this.vitality = vitality;
         this.intelligence = intelligence;
+        this.maxEnergy = 20;
+        this.energy = maxEnergy;
+        
         this.inventory = new Inventory();
+        this.moves = new ArrayList<>();
+        this.moves.add(new Move(Move.Type.STRIKE));
+        this.moves.add(new Move(Move.Type.QUICK_ATTACK));
+        this.moves.add(new Move(Move.Type.FLEE));
     }
 
     // Getters
@@ -49,6 +62,10 @@ public class Player {
     public int getAgility() { return agility; }
     public int getVitality() { return vitality; }
     public int getIntelligence() { return intelligence; }
+    public int getEnergy() { return energy; }
+    public int getMaxEnergy() { return maxEnergy; }
+    
+    public List<Move> getMoves() { return moves; }
     public Inventory getInventory() { return inventory; }
 
     public boolean isGameOver() {
@@ -62,17 +79,14 @@ public class Player {
      * going past max
      */
     public void heal(int amount) {
-        health = Math.min(health + amount, maxHealth);
-    }
+        health = Math.min(health + amount, maxHealth);}
+    
 
     public void takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
             health = 0;
             livesRemaining--;
-            if (isGameOver() == false) {
-                health = maxHealth; //restore health on life loss, not game over
-            }
         }
     }
 
@@ -81,6 +95,22 @@ public class Player {
         while (exp >= expToNextLevel) {
             levelUp();
         }
+    }
+    
+    public boolean useEnergy(int amount) {
+    	if(energy < amount) 
+    		return false;
+    	
+    	energy -= amount;
+    	return true;
+    	
+    }
+    
+    public void restoreEnergy(int amount) {
+    	energy = Math.min(energy + amount, maxEnergy);
+    }
+    public void restoreEnergy() {
+    	energy = maxEnergy;
     }
 
     private void levelUp() {
@@ -98,16 +128,23 @@ public class Player {
         if (points > statPoints) points = statPoints;
 
         switch (stat.toLowerCase()) {
-            case "strength":     strength += points;     break;
+            case "strength":     
+            	strength += points;     
+            	break;
             
-            case "agility":      agility += points;      break;
+            case "agility":      
+            	agility += points;      
+            	break;
             
-            case "vitality":     vitality += points;
-                                 maxHealth += points * 5; 
-                                 health += points * 5;
-                                 break;
+            case "vitality":    
+            	vitality += points;        
+            	maxHealth += points * 5;            
+            	health += points * 5;           
+            	break;
                                  
-            case "intelligence": intelligence += points; break;
+            case "intelligence": 
+            	intelligence += points; 
+            	break;
             
             default:
                 System.out.println("Unknown stat: " + stat);

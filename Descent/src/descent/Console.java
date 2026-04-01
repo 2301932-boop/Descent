@@ -1,10 +1,12 @@
 package descent;
 
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+
 
 public class Console {
 
-	// String
+	// String colours/formats ==============================================================
 	public static final String RESET = "\u001B[0m";
 	public static final String RED = "\u001B[31m";
 	public static final String GREEN = "\u001B[32m";
@@ -18,10 +20,14 @@ public class Console {
 	public static final String BOLD_GREEN = "\u001B[1;32m";
 	public static final String BOLD_YELLOW = "\u001B[1;33m";
 	public static final String BOLD_WHITE = "\u001B[1;37m";
-
+	
+	public static final String ITALIC = "\u001B[3m";
+	//===========================================================================================
+	
+	
 	private static final Scanner in = new Scanner(System.in);
 
-	// basic error checking int
+	// basic error checking Int
 	public static int errCheckInt(String prompt, int min, int max) {
 		while (true) {
 			System.out.print(prompt);
@@ -44,7 +50,7 @@ public class Console {
 	public static String errCheckString(String prompt) {
 		while (true) {
 			System.out.print(prompt);
-			String input = in.nextLine().trim();
+			String input = in.nextLine().trim(); 
 			if (!input.isEmpty()) {
 				return input;
 			}
@@ -70,6 +76,18 @@ public class Console {
 	// Coloured strings method
 	public static void println(String colour, String message) {
 		System.out.println(colour + message + RESET);
+	}
+	
+	public static void printSlow(String msg, int time) {
+		try {
+			char[] array = msg.toCharArray();
+			for(int i = 0; i < array.length; i++	) {
+				System.out.print(array[i]);
+				TimeUnit.MILLISECONDS.sleep(time);	
+			}
+		} catch (Exception e) {
+			
+		}
 	}
 
 }
