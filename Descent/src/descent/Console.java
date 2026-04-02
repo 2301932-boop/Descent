@@ -34,14 +34,14 @@ public class Console {
 			if (in.hasNextInt()) {
 				int num = in.nextInt();
 
-				in.nextLine(); //
+				in.nextLine(); 
 				if (num >= min && num <= max) {
 					return num;
 				}
 				println(RED, "Please enter a number between " + min + " and " + max + ".");
 			} else {
 				println(RED, "Invalid input. Please enter a number.");
-				in.next();
+				in.nextLine();
 			}
 		}
 	}
@@ -72,22 +72,52 @@ public class Console {
 			System.out.println("Choose from: " + String.join(", ", validOptions));
 		}
 	}
+	
+	public static void pressEnter() {
+	    System.out.println(Console.WHITE + "\n[ Press Enter to continue... ]" + Console.RESET);
+	    in.nextLine(); // Waits for the user to hit Enter
+	}
 
+	public static void clear() {
+	    // This works in most modern terminals (VS Code, IntelliJ, Putty)
+	    System.out.print("\033[H\033[2J");
+	    System.out.flush();
+	}
+	
 	// Coloured strings method
 	public static void println(String colour, String message) {
 		System.out.println(colour + message + RESET);
 	}
 	
 	public static void printSlow(String msg, int time) {
+	    printSlowClr(WHITE, msg, time); 
+	}
+	
+	public static void printSlow(String msg) {
+	    printSlowClr(WHITE, msg, 25); 
+	}
+	
+	public static void printSlowClr(String colour, String msg, int time) {
 		try {
-			char[] array = msg.toCharArray();
-			for(int i = 0; i < array.length; i++	) {
-				System.out.print(array[i]);
-				TimeUnit.MILLISECONDS.sleep(time);	
-			}
-		} catch (Exception e) {
-			
-		}
+	        // 1. Set the color once before the typing starts
+	        System.out.print(colour);
+	        
+	        char[] array = msg.toCharArray();
+	        for (int i = 0; i < array.length; i++) {
+	            System.out.print(array[i]);
+	            // Ensure each character appears the moment it's printed
+	            System.out.flush(); 
+	            TimeUnit.MILLISECONDS.sleep(time);    
+	        }
+	        
+	        // 2. Reset the color and move to a new line at the end
+	        System.out.println(RESET);
+	        
+	    } catch (Exception e) {
+	        // Fallback if the sleep is interrupted
+	        System.out.println(colour + msg + RESET);
+	    }
+	
 	}
 
 }

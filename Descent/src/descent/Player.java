@@ -44,9 +44,10 @@ public class Player {
         
         this.inventory = new Inventory();
         this.moves = new ArrayList<>();
-        this.moves.add(new Move(Move.Type.STRIKE));
-        this.moves.add(new Move(Move.Type.QUICK_ATTACK));
-        this.moves.add(new Move(Move.Type.FLEE));
+        
+        addMove(new Move(Move.Type.STRIKE));
+        addMove(new Move(Move.Type.QUICK_ATTACK));
+        addMove(new Move(Move.Type.FLEE));
     }
 
     // Getters
@@ -122,6 +123,17 @@ public class Player {
         statPoints += 3;    // reward points to allocate
         System.out.println(name + " reached level " + level + "! You have " + statPoints + " stat points to allocate.");
     }
+    
+    public void addMove(Move move) {
+    	
+    	for (Move learnedMoves : moves) {
+            if (learnedMoves.getName().equalsIgnoreCase(move.getName())) {
+                Console.println(Console.YELLOW, "You already know " + move.getName() + "!");
+                return;
+            }
+        }
+    	this.moves.add(move);
+    }
 
     public void allocateStats(String stat, int points) {
         if (points <= 0) return;
@@ -154,6 +166,8 @@ public class Player {
         System.out.println("Allocated " + points + " points to " + stat + ". Points remaining: " + statPoints);
     }
 
+
+    
     public void viewStats() {
         System.out.println("<==== " + name + " ====>");
         System.out.println("Level: " + level + " | EXP: " + exp + "/" + expToNextLevel);
@@ -162,4 +176,26 @@ public class Player {
         System.out.println("Vitality: " + vitality + " | Intelligence: " + intelligence);
         System.out.println("Unspent stat points: " + statPoints);
     }
+    
+    public void increaseStrength(int amount) {
+    	strength += amount;
+    }
+    
+    public void increaseIntelligence(int amount) {
+    	intelligence += amount;
+    }
+    
+    public void increaseAgility(int amount) {
+    	agility += amount;
+    }
+    
+    public void increaseVitality(int amount) {
+    	vitality += amount;
+    }
+    
+    public void increaseMaxHealth(int amount) {
+    	maxHealth += amount;
+    }
+    
+    
 }
