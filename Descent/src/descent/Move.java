@@ -2,83 +2,72 @@ package descent;
 
 import java.util.Random;
 
-public class Move {
+import descent.moves.*;
 
+
+public class Enemy {
+	
+	Random random = new Random();
+	
 	private String name;
-	private int energyCost;
-	private String description;
+	private int level;
+	private int maxHealth;
+	private int health;
+	private int defense;
+	private int attack;
+	private int expReward;
 	private Type type;
-	private static final Random random = new Random();
+	// Item itemDrop; //to do: make an array of possible drops and randomize
 
+	// enum to handle the different types of enemies
 	public enum Type {
-		STRIKE, QUICK_ATTACK, FLEE
+		SHROOMBEAR, HAMMERBEAK
 	}
 
-	public Move(Type type) {
-		this.type = type;
+	// type of enemy and level
+	public Enemy(Type type, int level) {
 		switch (type) {
-
-		case STRIKE:
-			this.name = "Strike";
-			this.energyCost = 10;
-			this.description = "A decent strike with your hands. (STR) ";
+		case SHROOMBEAR:
+			name = "Shroombear";
+			maxHealth = (int) (50 + level * 1.5);
+			this.defense = 0;
+			this.attack = level * 6;
 			break;
 
-		case QUICK_ATTACK:
-			this.name = "Quick Attack";
-			this.energyCost = 4;
-			this.description = "A quick jab. (AGL)";
-			break;
-
-		case FLEE:
-			this.name = "Flee";
-			this.energyCost = 0;
-			this.description = "Take your chances and run away. (AGL)";
+		case HAMMERBEAK:
+			name = "Hammerbeak";
+			maxHealth = (int) (40 + level * 1.5);
+			this.defense = 0;
+			this.attack = level * 3;
 			break;
 
 		}
+		health = maxHealth;
+		this.level = level;
+		expReward = (int) (5 + level * 3.5);
+	}
+	
+	public boolean isDead() {
+		return (health <= 0);
 	}
 
-	public String execute(Player player, Enemy enemy) {
-		switch (type) {
-		case STRIKE: {
-			if (player.useEnergy(energyCost) == false) {
-				return "FAIL: Not enough energy";
-			} else {
+	public void takeDamage(int amount) {
+		int reducedDamage = Math.max(amount - defense, 0);
+		health = Math.max(health - reducedDamage, 0);	
 
-				int damage = Math.max(1, player.getStrength() + random.nextInt(2) - enemy.getDefense());
-				enemy.takeDamage(damage);
-				return "HIT: Dealt " + damage + " damage!";
-			}
-		}
-		case QUICK_ATTACK: {
-			if (player.useEnergy(energyCost) == false) {
-				return "FAIL: Not enough energy!";
-			}
-			else {
-				int damage = Math.max(1, player.getAgility() - enemy.getDefense());
-				enemy.takeDamage(damage);
-				return "HIT: Dealt " + damage + " damage!";
-			}
-		}
-		
-		case FLEE: {
-			int fleeChance = Math.min(player.getAgility() * 2, 80);
-			if (fleeChance < random.nextInt(100)) {
-				return "FAIL: You failed to run away!";
-			}
-			else {
-				return "FLED: You escaped!";
-			}
-		}
-		default:
-			return "Move not found.";
-		}
 	}
+	
+	
+	//Getters
 	
 	public String getName() { return name; }
-	public String getDescription() { return description; }
-	public int getEnergyCost() { return energyCost; }
+	public int getLevel() { return level; }
+	public int getDefense() { return defense; }
+	public int getHealth() { return health; }
+	public int getMaxHealth() { return maxHealth; }
+	public int getExpReward() { return expReward; }
+	public int getAttack() { return attack; }
 	public Type getType() { return type; }
 	
+
 }
