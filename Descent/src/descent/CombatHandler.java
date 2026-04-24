@@ -3,7 +3,7 @@ package descent;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import descent.moves.Move;
+import move.*;
 
 public class Combat {
 
@@ -19,12 +19,11 @@ public class Combat {
 		Console.println(Console.BOLD_RED, "You encounter a " + enemy.getName() + "!");
 		Console.sleep(1000);
 
-
-		while (!enemy.isDead() && player.getHealth() > 0) {
+		while (!enemy.isDefeated() && player.getHealth() > 0) {
 			display();
 			playerTurn();
 
-			if (enemy.isDead()) {
+			if (enemy.isDefeated()) {
 				victory();
 				return;
 			}
@@ -75,25 +74,57 @@ public class Combat {
 						m.getDescription(), Console.RESET);
 
 			}
+			
 		}
+		
+		System.out.printf("%s%-3s%s %-18s%n", Console.BOLD_WHITE,
+		        (moves.size() + 1) + ".", Console.RESET, "Open Inventory", Console.RESET);
 
 		System.out.println("\n--------------------------------------------");
 
-		int choice = Console.errCheckInt("Choose a move >>> ", 1, moves.size());
-		Move selected = moves.get(choice - 1);
-		Console.println(Console.CYAN, "\nYou used " + selected.getName() + "...\n");
-		Console.sleep(500);
-		selected.execute(player, enemy);
-
+		int choice = Console.errCheckInt(">>> ", 1, moves.size() + 1);
+		
+		if (choice == moves.size() + 1) {
+		    player.getInventory().displayInventory(player);
+		    if (!player.getInventory().isEmpty()) {
+		        Console.println(Console.WHITE, "[0] Cancel");
+		        int itemChoice = Console.errCheckInt("Choose item >>> ", 0, player.getInventory().getSize());
+		        
+		        if (itemChoice == 0) {
+		            // cancelled
+		            playerTurn();
+		            return;
+		        }
+		        
+		        boolean turnSpent = player.getInventory().useItem(itemChoice - 1, player);
+		        if (!turnSpent) {
+		            // tried to use non-consumable 
+		            Console.sleep(800);
+		            playerTurn();
+		            return;
+		        }
+		    } else {
+		        Console.println(Console.YELLOW, "Your inventory is empty!");
+		        playerTurn();
+		        return;
+		    }
+		
+		} else {
+			Move selectedMove = moves.get(choice - 1);
+			String result = selectedMove.execute(player, enemy);
+			Console.println(Console.CYAN, "\nYou used " + selectedMove.getName() + "...\n");
+			Console.sleep(500);
+			Console.println(Console.BOLD_CYAN, result);
+		}
 	}
 
 	private void enemyTurn() {
-		Console.sleep(500);
+		Console.sleep(1000);
 		Console.println(Console.RED, "\n" + enemy.getName() + " attacks!");
 		Console.sleep(500);
 		int damage = Math.max(1, enemy.getAttack());
 		player.takeDamage(damage);
-		Console.println(Console.RED, "You took " + damage + " damage!");
+		Console.println(Console.BOLD_RED, "You took " + damage + " damage!\n");
 		Console.sleep(1000);
 
 	}
