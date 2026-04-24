@@ -3,10 +3,13 @@ package descent;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.moves.*;
+import item.*;
+import move.*;
+//import inventory.*;
 
 public class Player {
 
+	//Stats and values
 	private String name;
 	private int level;
 	private int exp;
@@ -22,9 +25,15 @@ public class Player {
 	private int maxEnergy;
 	private int intelligence;
 
+	//objects
 	private Inventory inventory;
 	private Whistle whistle;
 	private List<Move> moves;
+	
+	
+	private Equipment head;
+	private Equipment torso;
+	private Equipment boots;
 
 	// DEFAULTS
 	private static final int START_LEVEL = 1;
@@ -57,6 +66,8 @@ public class Player {
 		addMove(new BasicAttack());
 		addMove(new QuickAttack());
 		addMove(new Flee());
+		
+	
 
 	}
 
@@ -91,8 +102,13 @@ public class Player {
     public int getIntelligence() { return intelligence; }
     public int getEnergy() { return energy; }
     public int getMaxEnergy() { return maxEnergy; }
+    
+    public Inventory getInventory() { return inventory; }
     public Whistle getWhistle() { return whistle; }
     public List<Move> getMoves() { return moves; }
+    public Equipment getHead() { return head; }
+    public Equipment getTorso() { return torso; }
+    public Equipment getBoots() { return boots; }
     
     public int getExpReward(int baseExp) {
 		int scaledExp = (int) Math.round(baseExp * whistle.getExpMult());
@@ -122,6 +138,9 @@ public class Player {
 			vitality += points;
 			maxHealth += points * 5;
 			health += points * 5;
+			
+			if (health > maxHealth) health = maxHealth;
+			
 			break;
 
 		case "intelligence":
@@ -137,20 +156,25 @@ public class Player {
 
 	}
 
-	public void increaseStrength(int amount) {
-		strength += amount;
+	public void increaseStrength(int points) {
+		strength += points;
 	}
 
-	public void increaseIntelligence(int amount) {
-		intelligence += amount;
+	public void increaseIntelligence(int points) {
+		intelligence += points;
 	}
 
-	public void increaseAgility(int amount) {
-		agility += amount;
+	public void increaseAgility(int points) {
+		agility += points;
 	}
 
-	public void increaseVitality(int amount) {
-		vitality += amount;
+	public void increaseVitality(int points) {
+		vitality += points;
+		maxHealth += points * 5;
+		health += points * 5;
+		
+		if (health > maxHealth) health = maxHealth;
+		
 	}
 
 	public void increaseMaxHealth(int amount) {
@@ -209,6 +233,10 @@ public class Player {
 	public void addEnergy() {
 		energy = maxEnergy;
 	}
+	
+	public void displayStats() {
+		Console.println(Console.WHITE, "You have " + getAgility() + " agl.");
+	}
 
 	public void gainExperience(int amount) {
 		int scaledExp = (int) Math.round(amount * whistle.getExpMult());
@@ -243,5 +271,87 @@ public class Player {
 		moves.add(move);
 
 	}
+	
+	public boolean isEquipped(Equipment eq) {
+		 return (head != null && head.getName().equalsIgnoreCase(eq.getName())) ||
+		        (torso != null && torso.getName().equalsIgnoreCase(eq.getName())) ||
+		        (boots != null && boots.getName().equalsIgnoreCase(eq.getName()));
+		}
+	
+	
+	
+	public void toggleEquip(Equipment eq) {
+		switch (eq.getSlot()) {
+		case HEAD:
+			if (head != null && head.getName().equalsIgnoreCase(eq.getName())) {
+				head.unequip(this);
+				head = null;
+				Console.println(Console.YELLOW, eq.getName() + " unequipped.");
+			}
+			else {
+				if (head != null) {
+					head.unequip(this);
+				}
+				eq.equip(this);
+				head = eq;
+				Console.println(Console.YELLOW, eq.getName() + " equipped.");
+			}
+			break;
+			
+		case TORSO:
+			if (torso != null && torso.getName().equalsIgnoreCase(eq.getName())) {
+				torso.unequip(this);
+				torso = null;
+				Console.println(Console.YELLOW, eq.getName() + " unequipped.");
+			}
+			else {
+				if (torso != null) {
+					torso.unequip(this);
+				}
+				eq.equip(this);
+				torso = eq;
+				Console.println(Console.YELLOW, eq.getName() + " equipped.");
+			}
+			break;
+			
+		case BOOTS:
+			if (boots != null && boots.getName().equalsIgnoreCase(eq.getName())) {
+				boots.unequip(this);
+				boots = null;
+				Console.println(Console.YELLOW, eq.getName() + " unequipped.");
+			}
+			else {
+				if (boots != null) {
+					boots.unequip(this);
+				}
+				eq.equip(this);
+				boots = eq;
+				Console.println(Console.YELLOW, eq.getName() + " equipped.");
+			}
+			break;
+		}
+	}
+	
+	
+	
+	public void equipItem(String itemName) {
+	    int index = inventory.getItemIndex(itemName);
 
+	    if (index == -1) {
+	        Console.println(Console.RED, "Item not found.");
+	        return;
+	    }
+
+	    Item item = inventory.getItems().get(index);
+
+	    if (!(item instanceof Equipment)) {
+	        Console.println(Console.RED, "That item is not equippable.");
+	        return;
+	    }
+
+	    toggleEquip((Equipment) item);
+	}
+	
+	
+	
 }
