@@ -8,6 +8,7 @@ public class BasicAttack extends Move{
 		super("Basic Attack", "A heavy strike", 5);
 	}
 	
+	
 	@Override
 	public String execute(Player player, Enemy enemy) {
 		if(!player.hasEnergy(energyCost)) {
