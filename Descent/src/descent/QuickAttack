@@ -1,0 +1,23 @@
+package move;
+
+import descent.Player;
+import descent.Enemy;
+
+public class QuickAttack extends Move{
+	public QuickAttack() {
+		super("Quick attack", "A light, fast strike", 5);
+	}
+	
+	@Override
+	public String execute(Player player, Enemy enemy) {
+		if(!player.hasEnergy(energyCost)) {
+			return "[FAIL]: not enough energy!";
+		}
+		
+		int damage = player.getStrength() * 2;
+		player.useEnergy(energyCost);
+		enemy.takeDamage(damage);
+		
+		return "[HIT]: You strike for " + damage + " damage!";
+	}
+}
