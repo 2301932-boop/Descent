@@ -7,7 +7,6 @@ public class Enemy {
 	private int maxHealth;
 	private int health;
 	private int attack;
-	private int defense;
 	private int expReward;
 	private Type type;
 	
@@ -15,7 +14,8 @@ public class Enemy {
 	public enum Type{
 		SHROOMBEAR, 
 		HAMMERBEAK,
-		SILKFANG
+		SILKFANG,
+		DRAGON
 	}
 	
 	
@@ -29,9 +29,8 @@ public class Enemy {
 		case SHROOMBEAR:
 			this.name = "Shroombear";
 			this.maxHealth = level * 6;
-			this.attack = level * 6;
+			this.attack = level * 5;
 			this.expReward = (int) (level * 2.5);
-			this.defense = 0;
 			break;
 
 		case HAMMERBEAK:
@@ -39,7 +38,6 @@ public class Enemy {
 			this.maxHealth = level * 5;
 			this.attack = level * 3;
 			this.expReward = (int) (level * 2);
-			this.defense = 0;
 			break;
 		
 		case SILKFANG:
@@ -47,7 +45,13 @@ public class Enemy {
 			this.maxHealth = level * 5;
 			this.attack = level * 3;
 			this.expReward = (int) (level * 2.75);
-			this.defense = 0;
+			
+		case DRAGON:
+			this.name = "Dragon";
+			this.maxHealth = level * 15;
+			this.attack = level * 5;
+			this.expReward = (int) (level * 6);
+			break;
 		}
 		
 		this.health = maxHealth;
@@ -60,8 +64,7 @@ public class Enemy {
 	}
 
 	public void takeDamage(int damage) {
-		int reducedDamage =  Math.max(damage - defense, 0);
-		health = Math.max(health - reducedDamage, 0);
+		health = Math.max(health - damage, 0);
 	}
 	
 	public void heal() {
@@ -71,12 +74,14 @@ public class Enemy {
 	public void heal (int amount) {
 		health = Math.min(health + amount, maxHealth);
 	}
+	
+	
+	
 
 	
 	//Getters=====================================================================
 	public String getName() { return name; }
 	public int getLevel() { return level; }
-	public int getDefense() { return defense; }
 	public int getHealth() { return health; }
 	public int getMaxHealth() { return maxHealth; }
 	public int getAttack() { return attack; } 
