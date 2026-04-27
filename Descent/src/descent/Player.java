@@ -235,6 +235,7 @@ public class Player {
 	}
 	
 	public void displayStats() {
+		//TEMPORARY==========================================================
 		Console.println(Console.WHITE, "You have " + getAgility() + " agl.");
 	}
 
