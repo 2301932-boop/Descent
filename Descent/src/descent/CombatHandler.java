@@ -1,8 +1,6 @@
 package descent;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import move.*;
 
 public class Combat {
@@ -119,10 +117,24 @@ public class Combat {
 	}
 
 	private void enemyTurn() {
+		int damage = Math.max(1, enemy.getAttack());
+
+		if (enemy instanceof Boss) {
+			Boss boss = (Boss) enemy;
+			
+			if (boss.isEnraged()) {
+				damage = (int) (damage * 1.5);
+			}
+			
+			if (boss.shouldUseAbility()) {
+				Console.sleep(500);
+				boss.useSpecialAbility(player);
+			}
+			
+		}
 		Console.sleep(1000);
 		Console.println(Console.RED, "\n" + enemy.getName() + " attacks!");
 		Console.sleep(500);
-		int damage = Math.max(1, enemy.getAttack());
 		player.takeDamage(damage);
 		Console.println(Console.BOLD_RED, "You took " + damage + " damage!\n");
 		Console.sleep(1000);
@@ -131,7 +143,7 @@ public class Combat {
 
 	private void victory() {
 		Console.println(Console.BOLD_YELLOW, "\nVictory! " + enemy.getName() + " has been defeated.");
-		Console.sleep(500);
+		Console.sleep(1000);
 		player.gainExperience(enemy.getExpReward());
 		Console.println(Console.CYAN, "You gained " + enemy.getExpReward() + " experience!");
 		player.addEnergy();
@@ -148,7 +160,7 @@ public class Combat {
 		} else {
 			Console.println(Console.YELLOW, "You lost a life! Lives remaining: " + player.getLivesRemaining());
 			Console.sleep(1000);
-			Console.println(Console.WHITE, "You retreat to safety to recover...");
+			Console.println(Console.YELLOW, "You retreat to safety to recover...");
 			player.heal();
 		}
 	}
