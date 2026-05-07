@@ -70,12 +70,7 @@ public class Inventory {
 		player.toggleEquip((Equipment) item);
 		return true;
 	}
-	
-	/**
-	private boolean isEquipped(Player player, Equipment item) {
-	    return player.isEquipped(item);
-	}
-	*/
+
 	
 	public String getStatString(Equipment eq) {
 	    String stats = "";
@@ -143,17 +138,19 @@ public class Inventory {
 	}
 	// skipping duplicates in display
 	public List<Item> getDisplayItems() {
-		ArrayList<Item> displayItems = new ArrayList<>();
-		ArrayList<String> countedNames = new ArrayList<>();
+	    List<Item> displayItems = new ArrayList<>();
+	    List<String> countedNames = new ArrayList<>();
 
-		for (Item current : items) {
-			if (countedNames.contains(current.getName().toLowerCase())) {
-				continue;
-			}
-			countedNames.add(current.getName().toLowerCase());
-			displayItems.add(current);
-		}
-		return displayItems;
+	    for (Item current : items) {
+	        String name = current.getName().toLowerCase();
+
+	        if (!countedNames.contains(name)) {
+	            countedNames.add(name);
+	            displayItems.add(current);
+	        }
+	    }
+
+	    return displayItems;
 	}
 
 	private String getRarityColour(Item.Rarity rarity) {
@@ -185,6 +182,57 @@ public class Inventory {
 			}
 		}
 		return -1; // not found
+	}
+	
+	public boolean useConsumableInCombat(Player player) {
+	    List<Item> displayItems = getDisplayItems();
+	    List<Item> consumables = new ArrayList<>();
+
+	    for (Item item : displayItems) {
+	        if (item instanceof Consumable) {
+	            consumables.add(item);
+	        }
+	    }
+
+	    if (consumables.isEmpty()) {
+	        Console.println(Console.YELLOW, "You have no consumables.");
+	        return false;
+	    }
+
+	    Console.println(Console.BOLD_WHITE, "\n=== CONSUMABLES ===");
+
+	    for (int i = 0; i < consumables.size(); i++) {
+	        Item item = consumables.get(i);
+	        int count = getNumberOfItems(item);
+
+	        String name = item.getName();
+	        if (count > 1) {
+	            name += " x" + count;
+	        }
+
+	        System.out.printf("%d. %s - %s%s%s%n",
+	            i + 1,
+	            name,
+	            Console.ITALIC,
+	            item.getDescription(),
+	            Console.RESET
+	        );
+	    }
+
+	    System.out.println("0. Cancel");
+
+	    int choice = Console.errCheckInt(">>> ", 0, consumables.size());
+
+	    if (choice == 0) return false;
+
+	    Item selected = consumables.get(choice - 1);
+
+	    int realIndex = getItemIndex(selected.getName());
+
+	    selected.use(player);
+	    items.remove(realIndex);
+
+	    return true;
 	}
 	
 	

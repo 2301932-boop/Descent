@@ -6,7 +6,6 @@ import java.util.List;
 import item.*;
 import move.*;
 
-
 public class Player {
 
 	//Stats and values
@@ -25,12 +24,15 @@ public class Player {
 	private int maxEnergy;
 	private int intelligence;
 
-	//objects
+	private int depth = 0;
+	
+	//Other
 	private Inventory inventory;
 	private Whistle whistle;
 	private List<Move> moves;
 	
 	
+	//Equipped armor
 	private Equipment head;
 	private Equipment torso;
 	private Equipment boots;
@@ -46,7 +48,7 @@ public class Player {
 	public Player(String name, int agility, int intelligence, int strength, int vitality) {
 
 		this.name = name;
-		this.maxHealth = START_MAX_HEALTH;
+		this.maxHealth = START_MAX_HEALTH + vitality * 5;
 		this.health = maxHealth;
 		this.level = START_LEVEL;
 		this.expToNextLevel = START_EXP_TO_NEXT_LEVEL;
@@ -71,7 +73,7 @@ public class Player {
 
 	}
 
-	// rank
+	// rank along with exp scaling
 	public enum Whistle {
 		BELL(1.0), RED(1.2), BLUE(1.6), MOON(2.1), BLACK(2.7), WHITE(3.5);
 
@@ -80,11 +82,8 @@ public class Player {
 		Whistle(double expMult) {
 			this.expMult = expMult;
 		}
-
-		public double getExpMult() {
-			return expMult;
-		}
-
+		
+		public double getExpMult() { return expMult; }
 	}
 
 	// GETTERS
@@ -102,6 +101,8 @@ public class Player {
     public int getIntelligence() { return intelligence; }
     public int getEnergy() { return energy; }
     public int getMaxEnergy() { return maxEnergy; }
+    public int getDepth() { return depth; }
+
     
     public Inventory getInventory() { return inventory; }
     public Whistle getWhistle() { return whistle; }
@@ -114,7 +115,7 @@ public class Player {
 		int scaledExp = (int) Math.round(baseExp * whistle.getExpMult());
 		return scaledExp;
 	}
-//======================================================
+//Methods ======================================================
 
 	public void allocateStat(String stat, int points) {
 		if (statPoints <= 0)
@@ -246,16 +247,19 @@ public class Player {
 			levelUp();
 		}
 	}
-
 	
-	public void levelUp() {
+	public void increaseDepth(int amount) {
+	    depth += amount;
+	}
+	
+	public void levelUp() { //player levels up
 		exp -= expToNextLevel;
 		level++;
 
 		expToNextLevel = (int) Math.round(expToNextLevel * 1.12);
 		maxHealth += 10;
 		health = maxHealth;
-		statPoints += 3;
+		statPoints += 3; 
 		
 		
 
